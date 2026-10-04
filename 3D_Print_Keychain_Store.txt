@@ -1,0 +1,747 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  ShoppingBag, Search, Sparkles, X, Plus, Minus, Trash2, 
+  Lock, Unlock, Edit3, PlusCircle, AlertCircle, Save,
+  Globe, SearchCheck, CheckCircle2, SlidersHorizontal, 
+  ExternalLink, Layers, Shield, Cpu, Tag, ArrowUpRight,
+  Info, Zap, FileCode, Check
+} from 'lucide-react';
+
+const DEFAULT_PRODUCTS = [
+  {
+    id: 'prod-1',
+    title: 'Рухомий брелок "Білий Ведмедик"',
+    category: 'keychains',
+    categoryName: 'Брелоки / Тварини',
+    price: 95,
+    oldPrice: 120,
+    inStock: true,
+    rating: 5.0,
+    description: 'Милий рухомий брелок білого ведмедика з червоно-рожевими відбитками лапок. Надруковано з якісного PLA-пластику.',
+    image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&q=80&w=600',
+    colors: ['Білий', 'Червоний'],
+    material: 'PLA Plastic'
+  },
+  {
+    id: 'prod-2',
+    title: 'Гнучкий 3D-брелок "Акула-Молот"',
+    category: 'keychains',
+    categoryName: 'Брелоки / Морські',
+    price: 85,
+    oldPrice: 100,
+    inStock: true,
+    rating: 4.9,
+    description: 'Яскрава блакитна акула-молот із гнучким рухомим хвостом. Чудовий антистрес-аксесуар на ключі.',
+    image: 'https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?auto=format&fit=crop&q=80&w=600',
+    colors: ['Блакитний', 'Білий'],
+    material: 'PLA Plastic'
+  },
+  {
+    id: 'prod-3',
+    title: '3D-брелок "Дев\'ятихвостий Лис"',
+    category: 'keychains',
+    categoryName: 'Брелоки / Аніме',
+    price: 110,
+    oldPrice: 130,
+    inStock: true,
+    rating: 5.0,
+    description: 'Деталізований рухомий лис із виразними чорно-червоними вушками та розкішним хвостом.',
+    image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80&w=600',
+    colors: ['Жовтий', 'Чорний', 'Червоний'],
+    material: 'PLA Silk'
+  },
+  {
+    id: 'prod-4',
+    title: 'Гнучкий 3D-брелок "Скелет Ящірки"',
+    category: 'fidgets',
+    categoryName: 'Антистреси / Скелети',
+    price: 95,
+    oldPrice: 120,
+    inStock: true,
+    rating: 4.9,
+    description: 'Деталізований рухомий скелет ящірки/дракона. Шарнірна конструкція чудово згинається в руках.',
+    image: 'https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?auto=format&fit=crop&q=80&w=600',
+    colors: ['Кремовий', 'Бежевий'],
+    material: 'PLA Plastic'
+  },
+  {
+    id: 'prod-5',
+    title: 'Рухомий брелок "Кріпер Minecraft"',
+    category: 'keychains',
+    categoryName: 'Брелоки / Ігри',
+    price: 90,
+    oldPrice: 110,
+    inStock: true,
+    rating: 5.0,
+    description: 'Легендарний зелений Кріпер із Minecraft. Має рухомі ніжки та виразне піксельне обличчя.',
+    image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&q=80&w=600',
+    colors: ['Зелений', 'Чорний'],
+    material: 'PLA Plastic'
+  },
+  {
+    id: 'prod-6',
+    title: '3D-брелок "Малюк Грут"',
+    category: 'keychains',
+    categoryName: 'Брелоки / Кіно',
+    price: 100,
+    oldPrice: 120,
+    inStock: true,
+    rating: 4.8,
+    description: 'Милий рухомий брелок персонажа Грута з "Вартових Галактики". Виконаний із якісного текстурного пластику.',
+    image: 'https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?auto=format&fit=crop&q=80&w=600',
+    colors: ['Коричневий', 'Чорний'],
+    material: 'PLA Plastic'
+  },
+  {
+    id: 'prod-7',
+    title: 'Гнучкий брелок "Осьминожик"',
+    category: 'fidgets',
+    categoryName: 'Антистреси / Морські',
+    price: 85,
+    oldPrice: 100,
+    inStock: true,
+    rating: 4.9,
+    description: 'Милий осьминожик із гнучкими щупальцями з ефектом напівпрозорого переливу.',
+    image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80&w=600',
+    colors: ['Напівпрозорий Білий'],
+    material: 'PETG Clear'
+  },
+  {
+    id: 'prod-8',
+    title: 'Рухомий 3D-брелок "Пікачу"',
+    category: 'keychains',
+    categoryName: 'Брелоки / Аніме',
+    price: 105,
+    oldPrice: 130,
+    inStock: true,
+    rating: 5.0,
+    description: 'Яскравий рухомий брелок у формі Пікачу з рожевими щічками та хвостиком-блискавкою.',
+    image: 'https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?auto=format&fit=crop&q=80&w=600',
+    colors: ['Жовтий', 'Червоний', 'Чорний'],
+    material: 'PLA Plastic'
+  }
+];
+
+const CATEGORIES = [
+  { id: 'all', name: 'Всі брелоки' },
+  { id: 'keychains', name: 'Брелоки' },
+  { id: 'fidgets', name: 'Антистреси' }
+];
+
+export default function App() {
+  const [products, setProducts] = useState(() => {
+    const saved = localStorage.getItem('3d_store_neon_products_v2');
+    return saved ? JSON.parse(saved) : DEFAULT_PRODUCTS;
+  });
+
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [pinCode, setPinCode] = useState('');
+  const [pinError, setPinError] = useState('');
+  const [showAdminModal, setShowAdminModal] = useState(false);
+
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [productForm, setProductForm] = useState({
+    title: '',
+    category: 'keychains',
+    price: '',
+    oldPrice: '',
+    description: '',
+    image: '',
+    colors: 'Червоний, Чорний, Неоновий Зелений',
+    material: 'PLA Plastic',
+    inStock: true
+  });
+
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('default');
+  const [cart, setCart] = useState([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+
+  const [activeTab, setActiveTab] = useState('catalog');
+
+  useEffect(() => {
+    localStorage.setItem('3d_store_neon_products_v2', JSON.stringify(products));
+  }, [products]);
+
+  const handleAdminLogin = (e) => {
+    e.preventDefault();
+    if (pinCode.trim() === '1309') {
+      setIsAdmin(true);
+      setShowAdminModal(false);
+      setPinCode('');
+      setPinError('');
+    } else {
+      setPinError('Невірний PIN-код! Спробуйте ще раз.');
+    }
+  };
+
+  const handleSaveProduct = (e) => {
+    e.preventDefault();
+    const catObj = CATEGORIES.find(c => c.id === productForm.category) || CATEGORIES[1];
+
+    if (editingProduct) {
+      setProducts(prev => prev.map(p => p.id === editingProduct.id ? {
+        ...p,
+        title: productForm.title,
+        category: productForm.category,
+        categoryName: catObj.name,
+        price: Number(productForm.price),
+        oldPrice: productForm.oldPrice ? Number(productForm.oldPrice) : null,
+        description: productForm.description,
+        image: productForm.image || 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&q=80&w=600',
+        colors: typeof productForm.colors === 'string' ? productForm.colors.split(',').map(c => c.trim()) : productForm.colors,
+        material: productForm.material,
+        inStock: productForm.inStock
+      } : p));
+    } else {
+      const newProduct = {
+        id: `prod-${Date.now()}`,
+        title: productForm.title,
+        category: productForm.category,
+        categoryName: catObj.name,
+        price: Number(productForm.price),
+        oldPrice: productForm.oldPrice ? Number(productForm.oldPrice) : null,
+        inStock: productForm.inStock,
+        rating: 5.0,
+        description: productForm.description,
+        image: productForm.image || 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&q=80&w=600',
+        colors: typeof productForm.colors === 'string' ? productForm.colors.split(',').map(c => c.trim()) : productForm.colors,
+        material: productForm.material || 'PLA Plastic'
+      };
+      setProducts(prev => [newProduct, ...prev]);
+    }
+
+    setShowProductModal(false);
+    setEditingProduct(null);
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setProductForm({
+      title: '',
+      category: 'keychains',
+      price: '',
+      oldPrice: '',
+      description: '',
+      image: '',
+      colors: 'Червоний, Чорний, Неоновий',
+      material: 'PLA Plastic',
+      inStock: true
+    });
+  };
+
+  const startEditing = (prod) => {
+    setEditingProduct(prod);
+    setProductForm({
+      title: prod.title,
+      category: prod.category,
+      price: prod.price,
+      oldPrice: prod.oldPrice || '',
+      description: prod.description,
+      image: prod.image,
+      colors: Array.isArray(prod.colors) ? prod.colors.join(', ') : prod.colors,
+      material: prod.material || 'PLA Plastic',
+      inStock: prod.inStock !== false
+    });
+    setShowProductModal(true);
+  };
+
+  const handleDeleteProduct = (id) => {
+    if (window.confirm('Ви дійсно бажаєте видалити це оголошення?')) {
+      setProducts(prev => prev.filter(p => p.id !== id));
+    }
+  };
+
+  const filteredProducts = useMemo(() => {
+    return products.filter(p => {
+      const matchesCat = selectedCategory === 'all' || p.category === selectedCategory;
+      const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            p.description.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCat && matchesSearch;
+    }).sort((a, b) => {
+      if (sortBy === 'price-asc') return a.price - b.price;
+      if (sortBy === 'price-desc') return b.price - a.price;
+      return 0;
+    });
+  }, [products, selectedCategory, searchQuery, sortBy]);
+
+  const addToCart = (product) => {
+    if (!product.inStock) return;
+    setCart(prev => {
+      const exist = prev.find(item => item.id === product.id);
+      if (exist) {
+        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
+    setIsCartOpen(true);
+  };
+
+  const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-cyan-500 selection:text-black pb-16 relative">
+      
+      {/* 1. ВЕРХНІЙ БАНЕР ТА ВХІД ДЛЯ ПРОДАВЦЯ */}
+      <div className="bg-slate-900/90 border-b border-cyan-500/20 backdrop-blur-md sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between text-xs">
+          
+          <div className="flex items-center gap-2">
+            <span className="flex h-2 w-2 rounded-full bg-cyan-400 animate-ping"></span>
+            <span className="text-slate-300 font-medium hidden sm:inline">
+              3D Craft Store — Готові брелоки та антистреси
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setActiveTab(activeTab === 'seo' ? 'catalog' : 'seo')}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold transition-all border ${
+                activeTab === 'seo' 
+                  ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-lg shadow-cyan-500/10' 
+                  : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border-slate-700'
+              }`}
+            >
+              <Globe className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Як знайти сайт в Google</span>
+            </button>
+
+            <button
+              onClick={() => isAdmin ? setIsAdmin(false) : setShowAdminModal(true)}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold transition-all border ${
+                isAdmin 
+                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-lg shadow-amber-500/10' 
+                  : 'bg-gradient-to-r from-purple-600/30 to-pink-600/30 hover:from-purple-600/50 hover:to-pink-600/50 text-purple-300 border-purple-500/30'
+              }`}
+            >
+              {isAdmin ? <Unlock className="w-3.5 h-3.5 text-amber-400" /> : <Lock className="w-3.5 h-3.5 text-purple-400" />}
+              <span>{isAdmin ? 'Вийти з Адмінки' : 'Вхід для продавця'}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. ШАПКА МАГАЗИНУ */}
+      <header className="border-b border-slate-800/80 bg-slate-950/60">
+        <div className="max-w-7xl mx-auto px-4 py-5 flex items-center justify-between gap-4">
+          
+          <div 
+            onClick={() => setActiveTab('catalog')}
+            className="flex items-center gap-3 cursor-pointer group"
+          >
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-purple-600 p-0.5 shadow-lg shadow-cyan-500/20 group-hover:shadow-cyan-500/40 transition-all">
+              <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+                <Cpu className="w-6 h-6 text-cyan-400" />
+              </div>
+            </div>
+            <div>
+              <span className="text-xl font-black bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent tracking-wide">
+                NEON 3D CRAFT
+              </span>
+              <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                Брелоки & Оголошення
+              </span>
+            </div>
+          </div>
+
+          <div className="relative hidden md:block w-80">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Пошук брелоків..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-slate-900/90 border border-slate-800 focus:border-cyan-500/80 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none transition-all shadow-inner"
+            />
+          </div>
+
+          <button
+            onClick={() => setIsCartOpen(true)}
+            className="relative flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 px-4 py-2.5 rounded-xl font-black shadow-lg shadow-cyan-500/20 text-xs transition-all active:scale-95"
+          >
+            <ShoppingBag className="w-4 h-4" />
+            <span>Кошик</span>
+            {cart.length > 0 && (
+              <span className="bg-slate-950 text-cyan-300 px-2 py-0.5 rounded-full text-[10px] font-bold border border-cyan-500/40">
+                {cart.reduce((s, i) => s + i.quantity, 0)}
+              </span>
+            )}
+          </button>
+        </div>
+      </header>
+
+      {/* 3. ОСНОВНИЙ КОНТЕНТ */}
+      <main className="max-w-7xl mx-auto px-4 pt-8">
+
+        {/* АДМІН-ПАНЕЛЬ СТАТУС */}
+        {isAdmin && (
+          <div className="mb-8 p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between flex-wrap gap-4 shadow-xl">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-amber-500/20 rounded-xl">
+                <Shield className="w-6 h-6 text-amber-400" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-amber-300">Режим Продавця (PIN: 1309)</h4>
+                <p className="text-xs text-amber-200/70 mt-0.5">Ви можете створювати оголошення, виставляти свої ціни та редагувати товари.</p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setEditingProduct(null);
+                resetForm();
+                setShowProductModal(true);
+              }}
+              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-amber-500/20 transition-all"
+            >
+              <PlusCircle className="w-4 h-4" /> Створити оголошення
+            </button>
+          </div>
+        )}
+
+        {/* ВКЛАДКА SEO */}
+        {activeTab === 'seo' ? (
+          <div className="space-y-6">
+            <div className="bg-slate-900/90 border border-cyan-500/30 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+              <div className="flex items-center gap-3 border-b border-slate-800 pb-5">
+                <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-2xl">
+                  <SearchCheck className="w-8 h-8 text-cyan-400" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-white">Як опублікувати сайт та з'явитися в Google</h2>
+                  <p className="text-xs text-slate-400">Покрокова інструкція для індексації сайту</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed">
+                <div className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800 space-y-3">
+                  <div className="flex items-center gap-2 text-cyan-300 font-bold text-sm">
+                    <span className="w-6 h-6 rounded-lg bg-cyan-500/20 flex items-center justify-center text-xs">1</span>
+                    Крок 1: Купівля Домену (.ua / .com.ua)
+                  </div>
+                  <p className="text-slate-400">Придбайте домен у хостинг-провайдера (NIC.ua, CityHost) для впізнаваності адреси сайту.</p>
+                </div>
+
+                <div className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800 space-y-3">
+                  <div className="flex items-center gap-2 text-indigo-300 font-bold text-sm">
+                    <span className="w-6 h-6 rounded-lg bg-indigo-500/20 flex items-center justify-center text-xs">2</span>
+                    Крок 2: Безкоштовний хостинг Vercel
+                  </div>
+                  <p className="text-slate-400">Завантажте код на GitHub та підключіть до Vercel.com для швидкого безкоштовного запуску.</p>
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setActiveTab('catalog')}
+                  className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black px-6 py-2.5 rounded-xl text-xs transition-all"
+                >
+                  Повернутися до Каталогу
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* ФІЛЬТРИ ТА СОРТУВАННЯ */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+              <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none w-full sm:w-auto">
+                {CATEGORIES.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
+                      selectedCategory === cat.id
+                        ? 'bg-cyan-500 text-slate-950 border-cyan-400 shadow-lg shadow-cyan-500/20'
+                        : 'bg-slate-900/80 text-slate-400 border-slate-800 hover:border-slate-700'
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-3 bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-xl text-xs font-medium text-slate-300 self-end sm:self-auto">
+                <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Сортувати:</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"
+                >
+                  <option value="default" className="bg-slate-900">За замовчуванням</option>
+                  <option value="price-asc" className="bg-slate-900">Спочатку дешевші</option>
+                  <option value="price-desc" className="bg-slate-900">Спочатку дорожчі</option>
+                </select>
+              </div>
+            </div>
+
+            {/* СПИСОК КАРТОК ТОВАРІВ */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.map(product => (
+                <div 
+                  key={product.id}
+                  className="bg-slate-900/60 rounded-3xl border border-slate-800/80 hover:border-cyan-500/50 transition-all duration-300 flex flex-col overflow-hidden relative group hover:shadow-2xl hover:shadow-cyan-500/10"
+                >
+                  <div className="h-56 bg-slate-950 relative overflow-hidden">
+                    <img 
+                      src={product.image} 
+                      alt={product.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    />
+                    
+                    <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+                      <span className={`text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider backdrop-blur-md ${
+                        product.inStock 
+                          ? 'bg-emerald-500/80 text-slate-950 border border-emerald-400/30' 
+                          : 'bg-rose-500/80 text-white'
+                      }`}>
+                        {product.inStock ? 'В наявності' : 'Немає'}
+                      </span>
+                    </div>
+
+                    {isAdmin && (
+                      <div className="absolute top-3 right-3 flex items-center gap-1.5">
+                        <button
+                          onClick={() => startEditing(product)}
+                          className="p-2 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl shadow-lg font-bold transition-all"
+                          title="Редагувати ціну/опис"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProduct(product.id)}
+                          className="p-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl shadow-lg font-bold transition-all"
+                          title="Видалити"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">{product.categoryName}</span>
+                      <h3 className="text-base font-bold text-white line-clamp-1 group-hover:text-cyan-300 transition-colors">{product.title}</h3>
+                      <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">{product.description}</p>
+                    </div>
+
+                    {product.colors && (
+                      <div className="text-[11px] text-slate-400">
+                        <span className="text-slate-500 font-medium">Кольори:</span> {Array.isArray(product.colors) ? product.colors.join(', ') : product.colors}
+                      </div>
+                    )}
+
+                    <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                      <div>
+                        <span className="text-lg font-black text-white">{product.price} ₴</span>
+                        {product.oldPrice && (
+                          <span className="text-xs text-slate-500 line-through block -mt-1">{product.oldPrice} ₴</span>
+                        )}
+                      </div>
+
+                      <button
+                        disabled={!product.inStock}
+                        onClick={() => addToCart(product)}
+                        className={`px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all ${
+                          product.inStock 
+                            ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/20 active:scale-95' 
+                            : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                        }`}
+                      >
+                        <ShoppingBag className="w-3.5 h-3.5" />
+                        Замовити
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+      </main>
+
+      {/* 4. МОДАЛЬНЕ ВІКНО ВХОДУ (КОД: 1309) */}
+      {showAdminModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="bg-slate-900 border border-purple-500/30 rounded-3xl p-6 max-w-xs w-full space-y-4 shadow-2xl relative">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <Lock className="w-4 h-4 text-purple-400" /> Вхід Продавця
+              </h3>
+              <button onClick={() => setShowAdminModal(false)} className="text-slate-400 hover:text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAdminLogin} className="space-y-3">
+              <div>
+                <label className="text-xs text-slate-300 font-semibold block mb-1">PIN-код продавця:</label>
+                <input
+                  type="password"
+                  placeholder="1309"
+                  value={pinCode}
+                  onChange={(e) => { setPinCode(e.target.value); setPinError(''); }}
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2.5 text-center text-lg font-mono text-white focus:outline-none"
+                  maxLength={6}
+                  autoFocus
+                />
+                {pinError && <p className="text-[11px] text-rose-400 mt-1.5 text-center">{pinError}</p>}
+              </div>
+
+              <button type="submit" className="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl text-xs transition-all">
+                Увійти
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 5. МОДАЛЬНЕ ВІКНО СТВОРЕННЯ / РЕДАГУВАННЯ */}
+      {showProductModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+              <h3 className="text-base font-bold text-white">{editingProduct ? 'Редагувати' : 'Нове оголошення'}</h3>
+              <button onClick={() => setShowProductModal(false)} className="text-slate-400 hover:text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveProduct} className="space-y-3.5 text-xs">
+              <div>
+                <label className="text-slate-300 font-semibold block mb-1">Назва товару</label>
+                <input required type="text" value={productForm.title} onChange={(e) => setProductForm({ ...productForm, title: e.target.value })} className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3 py-2 text-white focus:outline-none" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-slate-300 font-semibold block mb-1">Категорія</label>
+                  <select value={productForm.category} onChange={(e) => setProductForm({ ...productForm, category: e.target.value })} className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3 py-2 text-white focus:outline-none">
+                    {CATEGORIES.filter(c => c.id !== 'all').map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-slate-300 font-semibold block mb-1">Ціна (₴)</label>
+                  <input required type="number" value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3 py-2 text-white focus:outline-none" />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-slate-300 font-semibold block mb-1">URL фотографії</label>
+                <input type="text" value={productForm.image} onChange={(e) => setProductForm({ ...productForm, image: e.target.value })} className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3 py-2 text-white focus:outline-none" />
+              </div>
+
+              <div>
+                <label className="text-slate-300 font-semibold block mb-1">Опис</label>
+                <textarea rows={3} value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3 py-2 text-white focus:outline-none" />
+              </div>
+
+              <button type="submit" className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-3 rounded-xl shadow-lg shadow-cyan-500/20 text-xs transition-all">
+                Зберегти оголошення
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 6. КОШИК */}
+      {isCartOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/80 backdrop-blur-md">
+          <div className="w-full max-w-md bg-slate-900 h-full shadow-2xl flex flex-col border-l border-slate-800">
+            <div className="p-5 border-b border-slate-800 flex justify-between items-center">
+              <h3 className="font-bold text-white flex items-center gap-2 text-sm"><ShoppingBag className="w-4 h-4 text-cyan-400" /> Ваші замовлення ({cart.length})</h3>
+              <button onClick={() => setIsCartOpen(false)} className="text-slate-400 hover:text-white"><X className="w-5 h-5" /></button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-5 space-y-3">
+              {cart.length === 0 ? (
+                <div className="text-center py-16 text-slate-500 text-xs">Кошик порожній</div>
+              ) : (
+                cart.map(item => (
+                  <div key={item.id} className="flex items-center gap-3 p-3 bg-slate-950 rounded-2xl border border-slate-800">
+                    <img src={item.image} alt={item.title} className="w-12 h-12 rounded-xl object-cover" />
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-xs font-bold text-white truncate">{item.title}</h4>
+                      <span className="text-xs font-bold text-cyan-400">{item.price * item.quantity} ₴</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setCart(prev => prev.map(i => i.id === item.id ? { ...i, quantity: Math.max(0, i.quantity - 1) } : i).filter(i => i.quantity > 0))} className="p-1 text-slate-400 hover:text-white"><Minus className="w-3.5 h-3.5" /></button>
+                      <span className="text-xs font-bold text-white">{item.quantity}</span>
+                      <button onClick={() => setCart(prev => prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i))} className="p-1 text-slate-400 hover:text-white"><Plus className="w-3.5 h-3.5" /></button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {cart.length > 0 && (
+              <div className="p-5 border-t border-slate-800 space-y-3 bg-slate-950">
+                <div className="flex justify-between text-sm font-bold text-white">
+                  <span>Загальна сума:</span>
+                  <span className="text-cyan-400">{cartTotal} ₴</span>
+                </div>
+                <button onClick={() => { setIsCartOpen(false); setIsCheckoutOpen(true); }} className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-3 rounded-xl text-xs shadow-lg shadow-cyan-500/20">
+                  Оформити замовлення
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 7. ОФОРМЛЕННЯ */}
+      {isCheckoutOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+              <h3 className="font-bold text-white text-sm">Доставка Новою Поштою</h3>
+              <button onClick={() => setIsCheckoutOpen(false)} className="text-slate-400 hover:text-white"><X className="w-4 h-4" /></button>
+            </div>
+
+            {orderSuccess ? (
+              <div className="text-center py-6 space-y-3">
+                <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
+                <h4 className="font-bold text-white">Замовлення прийнято!</h4>
+                <p className="text-xs text-slate-400">Продавець зв'яжеться з вами для підтвердження.</p>
+                <button onClick={() => { setCart([]); setIsCheckoutOpen(false); setOrderSuccess(false); }} className="bg-cyan-500 text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl">
+                  Зрозуміло
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={(e) => { e.preventDefault(); setOrderSuccess(true); }} className="space-y-3 text-xs">
+                <div>
+                  <label className="text-slate-300 font-semibold block mb-1">ПІБ</label>
+                  <input required type="text" placeholder="Іван Іваненко" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none" />
+                </div>
+                <div>
+                  <label className="text-slate-300 font-semibold block mb-1">Телефон</label>
+                  <input required type="tel" placeholder="+380..." className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none" />
+                </div>
+                <div>
+                  <label className="text-slate-300 font-semibold block mb-1">Місто та Номер відділення НП</label>
+                  <input required type="text" placeholder="Київ, №15" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none" />
+                </div>
+
+                <div className="p-3 bg-slate-950 rounded-xl flex justify-between font-bold text-white text-xs border border-slate-800">
+                  <span>До сплати:</span>
+                  <span className="text-cyan-400">{cartTotal} ₴</span>
+                </div>
+
+                <button type="submit" className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-3 rounded-xl shadow-lg shadow-cyan-500/20">
+                  Підтвердити замовлення
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
